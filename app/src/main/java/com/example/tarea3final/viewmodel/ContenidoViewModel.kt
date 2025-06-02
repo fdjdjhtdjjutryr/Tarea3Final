@@ -29,8 +29,83 @@ class ContenidoViewModel(private val contenidoRepository: ContenidoRepository) :
             }
         }
     }
+    fun deleteContenido(contenido: Contenido) {
+        viewModelScope.launch {
+            contenidoRepository.deleteContenido(contenido)
+        }
+    }
     fun getContenidosPorCategoria(categoriaId: Int) =
         contenidoRepository.getAllContenidoStreamByCategoria(categoriaId)
+
+    fun cargarContenidosIniciales() {
+        viewModelScope.launch {
+            contenidoRepository.getAllContenidoStreamByCategoria(1).collect { lista ->
+                if (lista.isEmpty()) {
+                    val contenidosIniciales = listOf(
+                        Contenido(
+                            titulo = "Macucha",
+                            tipo = "Película",
+                            descripcion = "Pelicula default chilena de dictadura , quien lo hubiera imaginado...",
+                            imagen = "pelicula1",
+                            categoriaId = 1
+                        ),
+                        Contenido(
+                            titulo = "Malena",
+                            tipo = "Pelicula",
+                            descripcion = "Monica Bellucci.",
+                            imagen = "monicabellucci",
+                            categoriaId = 1
+                        ),
+                        Contenido(
+                            titulo = "Titanes del pacifico",
+                            tipo = "Pelicula",
+                            descripcion = "Pelicula de mechas , solo hay una , tristemente no tiene secuela",
+                            imagen = "pacificrim",
+                            categoriaId = 1
+                        ),
+                        Contenido(
+                            titulo = "Rapidos y furiosos",
+                            tipo = "Serie",
+                            descripcion = "No sabia que ibamos a caer aca , solo TUVE fe QUE QUEEEE??",
+                            imagen = "rapidosyfuriosos",
+                            categoriaId = 1
+                        ),
+                        Contenido(
+                            titulo = "Breaking Bad",
+                            tipo = "Serie",
+                            descripcion = "Un profesor de química se convierte en fabricante de metanfetamina.",
+                            imagen = "brbad",
+                            categoriaId = 2
+                        ),
+                        Contenido(
+                            titulo = "Vikingos",
+                            tipo = "Pelicula",
+                            descripcion = "RAAAAHH",
+                            imagen = "vikings",
+                            categoriaId = 2
+                        ),
+                        Contenido(
+                            titulo = "Game of Thrones",
+                            tipo = "Serie",
+                            descripcion = "Luchas de poder en los 7 reinos",
+                            imagen = "got",
+                            categoriaId = 2
+                        ),
+                        Contenido(
+                            titulo = "HunterXHunter",
+                            tipo = "Anime",
+                            descripcion = "Gon y la banda",
+                            imagen = "hxh",
+                            categoriaId = 3
+                        )
+                    )
+                    contenidosIniciales.forEach {
+                        contenidoRepository.insertContenido(it)
+                    }
+                }
+            }
+        }
+    }
 
 
 
