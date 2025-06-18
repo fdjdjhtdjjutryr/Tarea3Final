@@ -1,44 +1,36 @@
 package com.example.tarea3final.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+//import com.example.tarea3final.data.CategoriaRepository
+import com.example.tarea3final.data.CategoriaRepositoryApi
 import com.example.tarea3final.data.Categoria
-import com.example.tarea3final.data.CategoriaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 
-class CategoriaViewModel(private val categoriaRepository: CategoriaRepository) : ViewModel() {
+class CategoriaViewModel(app: Application) : AndroidViewModel(app) {
+
+    private val repo = CategoriaRepositoryApi(app)
 
     private val _categorias = MutableStateFlow<List<Categoria>>(emptyList())
-    val categorias: StateFlow<List<Categoria>> get() = _categorias
-
+    val categorias: StateFlow<List<Categoria>> = _categorias
 
     var categoriaUiState by mutableStateOf(CategoriaUiState())
         private set
 
     init {
         viewModelScope.launch {
-            // Inserta las categorías por defecto si la tabla está vacía
-            val categorias = categoriaRepository.getAllCategoriaStream().first()
-            if (categorias.isEmpty()) {
-                categoriaRepository.insertCategoria(Categoria(nombre = "Peliculas", descripcion = "Categoría de películas"))
-                categoriaRepository.insertCategoria(Categoria(nombre = "Series", descripcion = "Categoría de series"))
-                categoriaRepository.insertCategoria(Categoria(nombre = "Anime", descripcion = "Categoría de anime"))
-            }
-
-            categoriaRepository.getAllCategoriaStream().collect { lista ->
-                _categorias.value = lista
-            }
+            _categorias.value = repo.getCategorias()
         }
     }
-
-
 
     fun updateUiState(nuevaCategoria: CategoriaData) {
         categoriaUiState = CategoriaUiState(
@@ -51,16 +43,18 @@ class CategoriaViewModel(private val categoriaRepository: CategoriaRepository) :
         if (validateInput()) {
             viewModelScope.launch {
                 val categoria = categoriaUiState.categoriaData.toCategoria()
-                categoriaRepository.insertCategoria(categoria)
+                repo.createCategoria(categoria)
+                _categorias.value = repo.getCategorias()
             }
         }
     }
+
     fun deleteCategoria(categoria: Categoria) {
         viewModelScope.launch {
-            categoriaRepository.deleteCategoria(categoria)
+            repo.deleteCategoria(categoria)
+            _categorias.value = repo.getCategorias()
         }
     }
-
 
     private fun validateInput(categoria: CategoriaData = categoriaUiState.categoriaData): Boolean {
         return categoria.nombre.isNotBlank() && categoria.descripcion.isNotBlank()
@@ -87,6 +81,6 @@ fun CategoriaData.toCategoria(): Categoria = Categoria(
 )
 
 fun Categoria.toUiState(isEntryValid: Boolean = false): CategoriaUiState = CategoriaUiState(
-    categoriaData = CategoriaData(id, nombre, descripcion),
+    categoriaData = CategoriaData(id ?: 0, nombre, descripcion),
     isEntryValid = isEntryValid
 )

@@ -67,8 +67,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-
+    implementation("com.google.code.gson:gson:2.10.1")
 
 
 

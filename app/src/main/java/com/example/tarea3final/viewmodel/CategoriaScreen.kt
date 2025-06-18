@@ -26,25 +26,24 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.tarea3final.viewmodel.CategoriaViewModel
-import com.example.tarea3final.viewmodel.AppViewModelProvider
+//import com.example.tarea3final.viewmodel.AppViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoriaScreen(
     navController: NavController,
-    viewModel: CategoriaViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: CategoriaViewModel = viewModel(),
+    onAdd: () -> Unit = {}
 ) {
-    // Observa la lista de categorías del StateFlow
-    val categorias by viewModel.categorias.collectAsState()
+    Text("Estoy en Categorías")
 
+    val categorias by viewModel.categorias.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Categorías") })
         },
-
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
@@ -62,8 +61,7 @@ fun CategoriaScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                // Mostrar contenidos de esa categoría
-                                navController.navigate("contenido/${categoria.id}")
+                                navController.navigate("contenidos/${categoria.id}")
                             }
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -74,7 +72,7 @@ fun CategoriaScreen(
 
                             FloatingActionButton(
                                 onClick = {
-                                    navController.navigate("agregar_contenido/${categoria.id}")
+                                    navController.navigate("agregarContenido/${categoria.id}")
                                 },
                                 modifier = Modifier.size(40.dp)
                             ) {
@@ -83,8 +81,8 @@ fun CategoriaScreen(
 
                             FloatingActionButton(
                                 onClick = {
-                                viewModel.deleteCategoria(categoria)
-                            },
+                                    viewModel.deleteCategoria(categoria)
+                                },
                                 modifier = Modifier.size(40.dp)
                             ) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar Categoría")
@@ -92,7 +90,6 @@ fun CategoriaScreen(
                         }
                     }
                 }
-
             }
         }
     }

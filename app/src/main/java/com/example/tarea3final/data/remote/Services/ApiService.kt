@@ -1,13 +1,12 @@
 package com.example.tarea3final.data.remote.Services
 
+
+import com.example.tarea3final.data.Categoria
+import com.example.tarea3final.data.Contenido
 import retrofit2.http.*
 import retrofit2.Response
 
-data class Categoria(
-    val id: Int? = null,
-    val nombre: String,
-    val descripcion: String
-)
+
 
 interface ApiService {
     @GET("categorias")

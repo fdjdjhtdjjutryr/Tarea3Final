@@ -8,14 +8,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.tarea3final.viewmodel.CategoriaViewModel
-import com.example.tarea3final.viewmodel.AppViewModelProvider
+//import com.example.tarea3final.viewmodel.AppViewModelProvider
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarCategoriaScreen(
     navController: NavController,
-    viewModel: CategoriaViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: CategoriaViewModel = viewModel<CategoriaViewModel>()
+
 ) {
     val uiState = viewModel.categoriaUiState
     val scope = rememberCoroutineScope()
